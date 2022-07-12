@@ -58,7 +58,6 @@ function createTodoItem(title) {
     };
 };
 
-
 function createTodoApp(container, title = 'Todo items') {
     const todoAppTitle = createAppTitle(title);
     const todoAppForm = createTodoItemForm();
@@ -67,6 +66,17 @@ function createTodoApp(container, title = 'Todo items') {
     container.append(todoAppTitle);
     container.append(todoAppForm.form);
     container.append(todoAppList);
+
+    const formBtn = todoAppForm.btn;
+    formBtn.disabled = true;
+
+    todoAppForm.input.addEventListener('input', () => {
+        if (todoAppForm.input.value.length !== 0) {
+            formBtn.disabled = false;
+        } else {
+            formBtn.disabled = true;
+        }
+    });
 
     todoAppForm.form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -86,6 +96,9 @@ function createTodoApp(container, title = 'Todo items') {
                 return;
             };
         });
+
+        todoAppForm.input.value = '';
+        formBtn.disabled = true;
     });
 }
 
