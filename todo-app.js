@@ -59,10 +59,8 @@ function createTodoItem(title) {
 };
 
 
-function createTodoApp() {
-    const container = document.querySelector('#todo-app');
-
-    const todoAppTitle = createAppTitle('Todo list');
+function createTodoApp(container, title = 'Todo items') {
+    const todoAppTitle = createAppTitle(title);
     const todoAppForm = createTodoItemForm();
     const todoAppList = createTodoList();
  
@@ -91,4 +89,4 @@ function createTodoApp() {
     });
 }
 
-window.addEventListener('load', createTodoApp);
+window.createTodoApp = createTodoApp;
