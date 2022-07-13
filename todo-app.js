@@ -67,7 +67,7 @@ function createTodoItem(title, done) {
 };
 
 function createTodoApp(container, title = 'Todo items', array) {
-
+    
     const todoAppTitle = createAppTitle(title);
     const todoAppForm = createTodoItemForm();
     const todoAppList = createTodoList(); 
@@ -75,6 +75,14 @@ function createTodoApp(container, title = 'Todo items', array) {
     container.append(todoAppTitle);
     container.append(todoAppForm.form);
     container.append(todoAppList);
+
+    let storageArr = localStorage.getItem('items') ? JSON.parse(localStorage.getItem('items')) : [];
+    storageArr.forEach((item) => {
+        const createDataItem = createTodoItem(item);
+        todoAppList.append(createDataItem.item)
+        buttonSuccess(createDataItem);
+        buttonFalse(createDataItem);
+    });
 
     let arrTodoName;
     let arrTodoDone;
@@ -112,6 +120,9 @@ function createTodoApp(container, title = 'Todo items', array) {
         const todoAppItem = createTodoItem(todoAppForm.input.value);
         todoAppList.append(todoAppItem.item);
 
+        storageArr.push(todoAppForm.input.value);
+        localStorage.setItem('items', JSON.stringify(storageArr));
+    
         buttonSuccess(todoAppItem);
         buttonFalse(todoAppItem);
 
@@ -139,3 +150,4 @@ function buttonFalse(todoItem) {
 
 window.createTodoApp = createTodoApp;
 window.todoList = todoList;
+
