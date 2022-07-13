@@ -1,3 +1,8 @@
+const todoList = [
+    {name: 'Finish task', done: true},
+    {name: 'Play games', done: false},
+];
+
 function createAppTitle(title) {
     const appTitle = document.createElement('h2');
     appTitle.textContent = title;
@@ -34,7 +39,7 @@ function createTodoList() {
     return list;
 }
 
-function createTodoItem(title) {
+function createTodoItem(title, done) {
     const item = document.createElement('li');
     const btnWrapper = document.createElement('div');
     const btnSuccess = document.createElement('button');
@@ -48,6 +53,8 @@ function createTodoItem(title) {
     btnDanger.classList.add('btn', 'btn-danger');
     btnDanger.textContent = 'Remove';
 
+    if (done === true) item.classList.add('list-group-item-success');
+
     btnWrapper.append(btnSuccess, btnDanger);
     item.append(btnWrapper);
 
@@ -56,16 +63,36 @@ function createTodoItem(title) {
         btnSuccess,
         btnDanger,
     };
+
 };
 
-function createTodoApp(container, title = 'Todo items') {
+function createTodoApp(container, title = 'Todo items', array) {
+
     const todoAppTitle = createAppTitle(title);
     const todoAppForm = createTodoItemForm();
-    const todoAppList = createTodoList();
+    const todoAppList = createTodoList(); 
  
     container.append(todoAppTitle);
     container.append(todoAppForm.form);
     container.append(todoAppList);
+
+    let arrTodoName;
+    let arrTodoDone;
+
+    for (let i = 0; i < array.length; i++) {
+        let obj = array[i];
+        for (let [key, value] of Object.entries(obj)) {
+            if (key === 'name') {
+                arrTodoName = value;
+            } else if (key === 'done') {
+                arrTodoDone = value;
+            };
+        };
+        const todoArrItem = createTodoItem(arrTodoName, arrTodoDone);
+        todoAppList.append(todoArrItem.item);
+        buttonSuccess(todoArrItem);
+        buttonFalse(todoArrItem);
+    };
 
     const formBtn = todoAppForm.btn;
     formBtn.disabled = true;
@@ -85,21 +112,30 @@ function createTodoApp(container, title = 'Todo items') {
         const todoAppItem = createTodoItem(todoAppForm.input.value);
         todoAppList.append(todoAppItem.item);
 
-        todoAppItem.btnSuccess.addEventListener('click', () => {
-            todoAppItem.item.classList.toggle('list-group-item-success');
-        });
-
-        todoAppItem.btnDanger.addEventListener('click', () => {
-            if (confirm('Are you sure?')) {
-                todoAppItem.item.remove();
-            } else {
-                return;
-            };
-        });
+        buttonSuccess(todoAppItem);
+        buttonFalse(todoAppItem);
 
         todoAppForm.input.value = '';
         formBtn.disabled = true;
     });
-}
+};
+
+function buttonSuccess(todoItem) {
+    todoItem.btnSuccess.addEventListener('click', () => {
+        todoItem.item.classList.toggle('list-group-item-success');
+    });
+};
+
+function buttonFalse(todoItem) {
+    todoItem.btnDanger.addEventListener('click', () => {
+        if (confirm('Are you sure?')) {
+            todoItem.item.remove();
+        } else {
+            return;
+        };
+    });
+};
+
 
 window.createTodoApp = createTodoApp;
+window.todoList = todoList;
