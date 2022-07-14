@@ -1,5 +1,3 @@
-const todoList = [];
-
 function createAppTitle(title) {
     const appTitle = document.createElement('h2');
     appTitle.textContent = title;
@@ -64,7 +62,7 @@ function createTodoItem(title, done, id) {
 
 };
 
-function createTodoApp(container, title = 'Todo items', array) {
+function createTodoApp(container, title, key) {
     
     const todoAppTitle = createAppTitle(title);
     const todoAppForm = createTodoItemForm();
@@ -74,7 +72,8 @@ function createTodoApp(container, title = 'Todo items', array) {
     container.append(todoAppForm.form);
     container.append(todoAppList);
 
-    let storageArr = localStorage.getItem('items') ? JSON.parse(localStorage.getItem('items')) : [];
+    const todoKey = key;
+    let storageArr = localStorage.getItem(todoKey) ? JSON.parse(localStorage.getItem(todoKey)) : [];
 
     let arrLocalName;
     let arrLocalDone;
@@ -92,8 +91,8 @@ function createTodoApp(container, title = 'Todo items', array) {
         };
         const todoLocalItem = createTodoItem(arrLocalName, arrLocalDone, arrlocaId);
         todoAppList.append(todoLocalItem.item);
-        buttonSuccess(todoLocalItem);
-        buttonFalse(todoLocalItem);
+        buttonSuccess(todoLocalItem, todoKey);
+        buttonFalse(todoLocalItem, todoKey);
     }));
 
     const formBtn = todoAppForm.btn;
@@ -115,17 +114,17 @@ function createTodoApp(container, title = 'Todo items', array) {
         todoAppList.append(todoAppItem.item);
 
         storageArr.push({name:todoAppForm.input.value, done:false, id: todoAppItem.item.id});
-        localStorage.setItem('items', JSON.stringify(storageArr));
+        localStorage.setItem(todoKey, JSON.stringify(storageArr));
     
-        buttonSuccess(todoAppItem);
-        buttonFalse(todoAppItem);
+        buttonSuccess(todoAppItem, todoKey);
+        buttonFalse(todoAppItem, todoKey);
 
         todoAppForm.input.value = '';   
         formBtn.disabled = true;
     });
 };
 
-function changeItemDone(storageArr, todoItem) {
+function changeItemDone(storageArr, todoItem, key) {
     storageArr.map((item) => {
         if (item.id === todoItem.item.id && item.done === false) {
             item.done = true
@@ -133,31 +132,31 @@ function changeItemDone(storageArr, todoItem) {
             item.done = false;
         };
     });
-    localStorage.setItem('items', JSON.stringify(storageArr));
+    localStorage.setItem(key, JSON.stringify(storageArr));
 };
 
-function changeItemFalse(storageArr, todoItem) {
+function changeItemFalse(storageArr, todoItem, key) {
     storageArr.map((item, index) => {
         if (item.id === todoItem.item.id) {
             storageArr.splice(index, 1)
         };
     });
-    localStorage.setItem('items', JSON.stringify(storageArr));
+    localStorage.setItem(key, JSON.stringify(storageArr));
 };
 
-function buttonSuccess(todoItem) {
+function buttonSuccess(todoItem, key) {
     todoItem.btnSuccess.addEventListener('click', () => {
         todoItem.item.classList.toggle('list-group-item-success');
-        storageArr = JSON.parse(localStorage.getItem('items'));
-        changeItemDone(storageArr, todoItem)
+        storageArr = JSON.parse(localStorage.getItem(key));
+        changeItemDone(storageArr, todoItem, key)
     });
 };
 
-function buttonFalse(todoItem) {
+function buttonFalse(todoItem, key) {
     todoItem.btnDanger.addEventListener('click', () => {
         if (confirm('Are you sure?')) {
-            storageArr = JSON.parse(localStorage.getItem('items'));
-            changeItemFalse(storageArr, todoItem);
+            storageArr = JSON.parse(localStorage.getItem(key));
+            changeItemFalse(storageArr, todoItem, key);
             todoItem.item.remove();
         } else {
             return;
@@ -165,6 +164,4 @@ function buttonFalse(todoItem) {
     });
 };
 
-
 window.createTodoApp = createTodoApp;
-window.todoList = todoList;
