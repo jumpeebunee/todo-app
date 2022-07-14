@@ -1,7 +1,4 @@
-const todoList = [
-    {name: 'Finish task', done: true},
-    {name: 'Play games', done: false},
-];
+const todoList = [];
 
 function createAppTitle(title) {
     const appTitle = document.createElement('h2');
@@ -39,7 +36,7 @@ function createTodoList() {
     return list;
 }
 
-function createTodoItem(title, done) {
+function createTodoItem(title, done, id) {
     const item = document.createElement('li');
     const btnWrapper = document.createElement('div');
     const btnSuccess = document.createElement('button');
@@ -53,7 +50,8 @@ function createTodoItem(title, done) {
     btnDanger.classList.add('btn', 'btn-danger');
     btnDanger.textContent = 'Remove';
 
-    if (done === true) item.classList.add('list-group-item-success');
+    item.id = id ? id : item.id = Math.floor(Math.random() * (50 - 0) + 0);
+    if (done) item.classList.add('list-group-item-success');
 
     btnWrapper.append(btnSuccess, btnDanger);
     item.append(btnWrapper);
@@ -77,30 +75,26 @@ function createTodoApp(container, title = 'Todo items', array) {
     container.append(todoAppList);
 
     let storageArr = localStorage.getItem('items') ? JSON.parse(localStorage.getItem('items')) : [];
-    storageArr.forEach((item) => {
-        const createDataItem = createTodoItem(item);
-        todoAppList.append(createDataItem.item)
-        buttonSuccess(createDataItem);
-        buttonFalse(createDataItem);
-    });
 
-    let arrTodoName;
-    let arrTodoDone;
+    let arrLocalName;
+    let arrLocalDone;
+    let arrlocaId;
 
-    for (let i = 0; i < array.length; i++) {
-        let obj = array[i];
-        for (let [key, value] of Object.entries(obj)) {
+    storageArr.map((item => {
+        for (let [key, value] of Object.entries(item)) {
             if (key === 'name') {
-                arrTodoName = value;
+                arrLocalName = value;
             } else if (key === 'done') {
-                arrTodoDone = value;
+                arrLocalDone = value;
+            } else if (key === 'id') {
+                arrlocaId = value;
             };
         };
-        const todoArrItem = createTodoItem(arrTodoName, arrTodoDone);
-        todoAppList.append(todoArrItem.item);
-        buttonSuccess(todoArrItem);
-        buttonFalse(todoArrItem);
-    };
+        const todoLocalItem = createTodoItem(arrLocalName, arrLocalDone, arrlocaId);
+        todoAppList.append(todoLocalItem.item);
+        buttonSuccess(todoLocalItem);
+        buttonFalse(todoLocalItem);
+    }));
 
     const formBtn = todoAppForm.btn;
     formBtn.disabled = true;
@@ -120,20 +114,33 @@ function createTodoApp(container, title = 'Todo items', array) {
         const todoAppItem = createTodoItem(todoAppForm.input.value);
         todoAppList.append(todoAppItem.item);
 
-        storageArr.push(todoAppForm.input.value);
+        storageArr.push({name:todoAppForm.input.value, done:false, id: todoAppItem.item.id});
         localStorage.setItem('items', JSON.stringify(storageArr));
     
         buttonSuccess(todoAppItem);
         buttonFalse(todoAppItem);
 
-        todoAppForm.input.value = '';
+        todoAppForm.input.value = '';   
         formBtn.disabled = true;
     });
+};
+
+function changeItemDone(storageArr, todoItem) {
+    storageArr.map((item) => {
+        if (item.id === todoItem.item.id && item.done === false) {
+            item.done = true
+        } else if (item.id === todoItem.item.id && item.done === true){
+            item.done = false;
+        };
+    });
+    localStorage.setItem('items', JSON.stringify(storageArr));
 };
 
 function buttonSuccess(todoItem) {
     todoItem.btnSuccess.addEventListener('click', () => {
         todoItem.item.classList.toggle('list-group-item-success');
+        storageArr = JSON.parse(localStorage.getItem('items'));
+        changeItemDone(storageArr, todoItem)
     });
 };
 
@@ -150,4 +157,3 @@ function buttonFalse(todoItem) {
 
 window.createTodoApp = createTodoApp;
 window.todoList = todoList;
-
