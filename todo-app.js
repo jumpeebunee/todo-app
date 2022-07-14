@@ -136,6 +136,15 @@ function changeItemDone(storageArr, todoItem) {
     localStorage.setItem('items', JSON.stringify(storageArr));
 };
 
+function changeItemFalse(storageArr, todoItem) {
+    storageArr.map((item, index) => {
+        if (item.id === todoItem.item.id) {
+            storageArr.splice(index, 1)
+        };
+    });
+    localStorage.setItem('items', JSON.stringify(storageArr));
+};
+
 function buttonSuccess(todoItem) {
     todoItem.btnSuccess.addEventListener('click', () => {
         todoItem.item.classList.toggle('list-group-item-success');
@@ -147,6 +156,8 @@ function buttonSuccess(todoItem) {
 function buttonFalse(todoItem) {
     todoItem.btnDanger.addEventListener('click', () => {
         if (confirm('Are you sure?')) {
+            storageArr = JSON.parse(localStorage.getItem('items'));
+            changeItemFalse(storageArr, todoItem);
             todoItem.item.remove();
         } else {
             return;
